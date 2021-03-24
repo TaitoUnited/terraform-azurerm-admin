@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-variable "resource_group_name" {
+variable "name" {
   type = string
 }
 
-variable "name" {
+variable "resource_group_name" {
   type = string
 }
 
