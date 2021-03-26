@@ -14,14 +14,35 @@
  * limitations under the License.
  */
 
-variable "name" {
+variable "subscription_id" {
   type = string
+  default = ""
 }
 
-variable "resource_group_name" {
-  type = string
+variable "permissions" {
+  type = list(object({
+    name = string
+    type = string
+    roles = list(object({
+      name = string
+      type = optional(string)
+      scope = optional(string)
+    }))
+  }))
+  default = []
+  description = "Resources as JSON (see README.md). You can read values from a YAML file with yamldecode()."
 }
 
-variable "location" {
-  type = string
+variable "custom_roles" {
+  type = list(object({
+    name = string
+    description = optional(string)
+    actions = optional(list(string))
+    notActions = optional(list(string))
+    dataActions = optional(list(string))
+    notDataActions = optional(list(string))
+    assignableScopes = optional(list(string))
+  }))
+  default = []
+  description = "Resources as JSON (see README.md). You can read values from a YAML file with yamldecode()."
 }

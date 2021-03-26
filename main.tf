@@ -18,5 +18,44 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_subscription" "current" {
+  subscription_id = var.subscription_id != "" ? var.subscription_id : null
+}
+
 locals {
+  customRoles = try(var.custom_roles, [])
+  permissions = try(var.permissions, [])
+
+  userRoles = flatten([
+    for user in [for p in local.permissions: p if p.type == "user"]: [
+      for role in user.roles:
+      {
+        key  = "${user.name}-${role.name}-${role.scope}"
+        user = user
+        role = role
+      }
+    ]
+  ])
+
+  groupRoles = flatten([
+    for group in [for p in local.permissions: p if p.type == "group"]: [
+      for role in group.roles:
+      {
+        key  = "${group.name}-${role.name}-${role.scope}"
+        group = group
+        role = role
+      }
+    ]
+  ])
+
+  serviceRoles = flatten([
+    for service in [for p in local.permissions: p if p.type == "service"]: [
+      for role in service.roles:
+      {
+        key  = "${service.name}-${role.name}-${role.scope}"
+        service = service
+        role = role
+      }
+    ]
+  ])
 }

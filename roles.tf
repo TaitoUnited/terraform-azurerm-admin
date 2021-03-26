@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "=1.4.0"
-    }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=2.51.0"
-    }
+resource "azurerm_role_definition" "role" {
+  for_each    = {for item in local.customRoles: item.key => item}
+
+  name        = each.value.name
+  scope       = each.value.scope != null ? each.value.scope : data.azurerm_subscription.current.id
+  description = each.value.description
+  permissions {
+    actions = try(each.value.actions, [])
+    not_actions = try(each.value.notActions, [])
+    data_actions = try(each.value.dataActions, [])
+    not_data_actions = try(each.value.notDataActions, [])
   }
-  
-  required_version = ">= 0.14"
-  experiments = [module_variable_optional_attrs]
+  assignable_scopes = try(each.value.assignableScopes, [])
 }

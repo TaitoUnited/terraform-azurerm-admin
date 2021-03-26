@@ -13,17 +13,57 @@ module "admin" {
   source              = "TaitoUnited/admin/azurerm"
   version             = "1.0.0"
 
-  name                = "my-infrastructure"
-  resource_group_name = "my-infrastructure"
-  location            = "northeurope"
+  subscription_id     = "/subscriptions/00000000-0000-0000-0000-000000000000"
+
+  permissions         = yamldecode(file("${path.root}/../infra.yaml"))["permissions"]
+  custom_roles        = yamldecode(file("${path.root}/../infra.yaml"))["customRoles"]
 }
 ```
 
 Example YAML:
 
 ```
-TODO
+permissions:
+  - name: devops
+    type: group
+    roles:
+      - name: Azure Kubernetes Service Cluster Admin Role
+      - name: Log Analytics Reader
+  - name: developers
+    type: group
+    roles:
+      - name: Azure Kubernetes Service Cluster User Role
+        scope: /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/development
+      - name: Log Analytics Reader
+        scope: /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/development
+  - name: john.doe@mydomain.com
+    type: user
+    roles:
+      - name: Log Analytics Reader
+        scope: /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/production
+  - name: my-app-dev
+    type: service
+    roles:
+      - name: my-app-dev
+        type: custom
+        scope: /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/development
+
+customRoles:
+  - name: my-app
+    description: Custom role for my app
+    actions:
+      - Microsoft.Storage/storageAccounts/queueServices/queues/read
+    dataActions:
+      - Microsoft.Storage/storageAccounts/queueServices/queues/messages/read
+    assignableScopes:
+      - /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/development
+      - /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/production
 ```
+
+YAML attributes:
+
+- See variables.tf for all the supported YAML attributes.
+- See [Azure built-in roles](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles).
 
 Combine with the following modules to get a complete infrastructure defined by YAML:
 
