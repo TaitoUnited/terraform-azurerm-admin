@@ -21,10 +21,10 @@ resource "azurerm_role_definition" "role" {
   scope       = each.value.scope != null ? each.value.scope : data.azurerm_subscription.current.id
   description = each.value.description
   permissions {
-    actions = try(each.value.actions, [])
-    not_actions = try(each.value.notActions, [])
-    data_actions = try(each.value.dataActions, [])
-    not_data_actions = try(each.value.notDataActions, [])
+    actions = coalesce(each.value.actions, [])
+    not_actions = coalesce(each.value.notActions, [])
+    data_actions = coalesce(each.value.dataActions, [])
+    not_data_actions = coalesce(each.value.notDataActions, [])
   }
-  assignable_scopes = try(each.value.assignableScopes, [])
+  assignable_scopes = coalesce(each.value.assignableScopes, [])
 }

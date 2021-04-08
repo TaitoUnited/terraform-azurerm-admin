@@ -23,8 +23,8 @@ data "azurerm_subscription" "current" {
 }
 
 locals {
-  customRoles = try(var.custom_roles, [])
-  permissions = try(var.permissions, [])
+  customRoles = coalesce(var.custom_roles, [])
+  permissions = coalesce(var.permissions, [])
 
   userRoles = flatten([
     for user in [for p in local.permissions: p if p.type == "user"]: [
