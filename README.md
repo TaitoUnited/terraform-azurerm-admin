@@ -24,19 +24,14 @@ Example YAML:
 
 ```
 permissions:
-  - name: devops
-    type: group
-    roles:
-      - name: Azure Kubernetes Service Cluster Admin Role
-      - name: Log Analytics Reader
   - name: developers
     type: group
     roles:
       - name: Azure Kubernetes Service Cluster User Role
-        scope: /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/development
+        scope: /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/development/providers/Microsoft.ContainerService/managedClusters/my-kubernetes
       - name: Log Analytics Reader
         scope: /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/development
-  - name: john.doe@mydomain.com
+  - name: john.doe_mydomain.com#EXT#@johndoemydomain.onmicrosoft.com
     type: user
     roles:
       - name: Log Analytics Reader
