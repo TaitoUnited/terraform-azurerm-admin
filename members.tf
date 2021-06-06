@@ -54,7 +54,11 @@ resource "azurerm_role_assignment" "user_role" {
   for_each             = {for item in local.userRoles: item.key => item}
 
   scope                = each.value.role.scope != null ? each.value.role.scope : data.azurerm_subscription.current.id
-  role_definition_id   = data.azurerm_role_definition.user_role[each.key].id
+  role_definition_id   = (
+    each.value.role.type == "custom"
+    ? data.azurerm_role_definition.user_role[each.key].id
+    : "${data.azurerm_subscription.current.id}${data.azurerm_role_definition.user_role[each.key].id}"
+  )
   principal_id         = data.azuread_user.user[each.key].object_id
 }
 
@@ -62,7 +66,11 @@ resource "azurerm_role_assignment" "group_role" {
   for_each             = {for item in local.groupRoles: item.key => item}
 
   scope                = each.value.role.scope != null ? each.value.role.scope : data.azurerm_subscription.current.id
-  role_definition_id   = data.azurerm_role_definition.group_role[each.key].id
+  role_definition_id   = (
+    each.value.role.type == "custom"
+    ? data.azurerm_role_definition.group_role[each.key].id
+    : "${data.azurerm_subscription.current.id}${data.azurerm_role_definition.group_role[each.key].id}"
+  )
   principal_id         = data.azuread_group.group[each.key].object_id
 }
 
@@ -70,6 +78,10 @@ resource "azurerm_role_assignment" "service_role" {
   for_each             = {for item in local.serviceRoles: item.key => item}
 
   scope                = each.value.role.scope != null ? each.value.role.scope : data.azurerm_subscription.current.id
-  role_definition_id   = data.azurerm_role_definition.service_role[each.key].id
+  role_definition_id   = (
+    each.value.role.type == "custom"
+    ? data.azurerm_role_definition.service_role[each.key].id
+    : "${data.azurerm_subscription.current.id}${data.azurerm_role_definition.service_role[each.key].id}"
+  )
   principal_id         = data.azuread_service_principal.service[each.key].object_id
 }
