@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-provider "azurerm" {
-  features {}
-}
+# provider "azurerm" {
+#   features {}
+# }
 
 data "azurerm_subscription" "current" {
   subscription_id = var.subscription_id != "" ? var.subscription_id : null
